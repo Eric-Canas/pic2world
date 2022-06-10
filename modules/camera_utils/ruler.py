@@ -1,5 +1,4 @@
 import numpy as np
-import cv2
 from modules.camera_utils.camera import Camera
 
 
@@ -15,21 +14,34 @@ class Ruler:
         """
         self.camera = camera
 
-    def pixel_to_distance_cm(self, pixel_measure: float, distance_to_object_cm: float) -> float:
+    def distance_to_object(self, object_length_px: float, real_object_length_cm: float) -> float:
         """
-        Given a pixel measure (height or width), return the corresponding large in cm.
+        Given the number of pixels that an object occupies in the image and the real
+        height of the element, return the distance (in z) to the object in cm.
         Uses the Gauss formula for lenses (thin-lens equation) and the camera parameters
         to calculate it.
+        This function assumes no distortion in the image.
         Thin-lens equation: (1/object_distance) + (1/image_distance) = 1/focal_length
-        Other similarities: size_in_img_h1/pixel_measure_h0 = focal_length/distance_to_object
-        pixel_measure: the measure in pixels to measure
-        distance_to_object_cm: the from the lens to the object (z axis) in cm
+        Other similarities: real_size/size_in_sensor = focal_length/distance_to_object
+        object_length_px: the number of pixels that an object occupies in the image
+        real_object_length_cm: the real height of the element in cm
+        return: the distance to the object in cm
         """
         # Get the pixel size in centimeters
-        object_measure_cm = pixel_measure * self.camera.pixel_size_cm
-        # Get the angle in radians
-        angle_radians = np.deg2rad(self.camera.angle_degrees)
-        # Get the object length in centimeters (width or height)
-        object_length_cm = distance_to_object_cm / \
-                           (self.camera.focal_length_cm * object_measure_cm * np.tan(angle_radians))
-        return object_length_cm
+        object_measure_in_sensor_cm = object_length_px * self.camera.pixel_size_cm
+        division_of_triangles = self.camera.focal_length_cm / object_measure_in_sensor_cm
+        distance_to_objective = division_of_triangles * real_object_length_cm
+        return distance_to_objective
+
+    def object_length_in_cm(self, distance_to_object_cm: float, object_length_px: float) -> float:
+        """
+        Given the distance to the object in cm and the number of pixels that the object
+        occupies in the image, return the real height of the object in cm.
+        distance_to_object_cm: the distance to the object in cm
+        object_length_px: the number of pixels that an object occupies in the image
+        return: the real height of the object in cm
+        """
+        object_measure_in_sensor_cm = object_length_px * self.camera.pixel_size_cm
+        division_of_triangles = object_measure_in_sensor_cm/self.camera.focal_length_cm
+        real_object_length_cm = division_of_triangles * distance_to_object_cm
+        return real_object_length_cm
