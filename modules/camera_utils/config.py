@@ -5,7 +5,7 @@ REDMI_NOTE_11_PRO_MAIN = 'Redmi Note 11 Pro - Main'
 REDMI_NOTE_11_PRO_SELFIE = 'Redmi Note 11 Pro - Selfie'
 CANON_EOS_R6 = 'Canon EOS R6'
 REDMI_NOTE_11_PRO_MAIN_CAMERA = Camera( # Samsung ISOCELL HM2 1/1.52"
-        pixel_size_mm=(0.7*sqrt(9))/1000.0, # Uses Nona-Bayer (9 pixels combined). 108MP -> 12MP
+        pixel_size_mm=(0.7*sqrt(9)*4)/1000.0, # Uses Nona-Bayer (9 pixels combined). 108MP -> 12MP
         focal_length_mm=24,
         # aperture is f/1.9,
         sensor_shape_px=(4000, 3000),

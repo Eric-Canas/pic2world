@@ -28,9 +28,9 @@ class Ruler:
         return: the distance to the object in cm
         """
         # Get the pixel size in centimeters
-        object_measure_in_sensor_cm = object_length_px * self.camera.pixel_size_cm
-        division_of_triangles = self.camera.focal_length_cm / object_measure_in_sensor_cm
-        distance_to_objective = division_of_triangles * real_object_length_cm
+        object_measure_in_sensor_cm = self.camera.px_to_cm(px=object_length_px)
+        magnification = real_object_length_cm / object_measure_in_sensor_cm
+        distance_to_objective = self.camera.focal_length_cm * magnification
         return distance_to_objective
 
     def object_length_in_cm(self, distance_to_object_cm: float, object_length_px: float) -> float:
@@ -41,7 +41,8 @@ class Ruler:
         object_length_px: the number of pixels that an object occupies in the image
         return: the real height of the object in cm
         """
-        object_measure_in_sensor_cm = object_length_px * self.camera.pixel_size_cm
-        division_of_triangles = object_measure_in_sensor_cm/self.camera.focal_length_cm
-        real_object_length_cm = division_of_triangles * distance_to_object_cm
+        object_measure_in_sensor_cm = self.camera.px_to_cm(px=object_length_px)
+        # Calculate the magnification from the distances (real_distance/focal_length)
+        magnification = distance_to_object_cm / self.camera.focal_length_cm
+        real_object_length_cm = object_measure_in_sensor_cm * magnification
         return real_object_length_cm

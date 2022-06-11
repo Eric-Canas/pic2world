@@ -35,3 +35,22 @@ class Camera:
         else:
             self.sensor_shape_mm, self.sensor_shape_cm, self.sensor_shape_m = None, None, None
             self.sensor_aperture_degrees, self.cos_of_half_aperture_width = None, None
+
+    def px_to_mm(self, px: int | float) -> float:
+        """
+        Convert a number of pixels to the physical millimeters occupied in the sensor
+        """
+        return px * self.pixel_size_mm
+
+    def px_to_cm(self, px: int | float) -> float:
+        """
+        Convert a number of pixels to the physical centimeters occupied in the sensor
+        """
+        return self.px_to_mm(px) / 10.0
+
+    def px_to_m(self, px: int | float) -> float:
+        """
+        Convert a number of pixels to the physical meters occupied in the sensor
+        """
+        return self.px_to_mm(px) / 1000.0
+
