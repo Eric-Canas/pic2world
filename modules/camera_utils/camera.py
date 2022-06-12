@@ -30,11 +30,11 @@ class Camera:
             self.sensor_shape_cm = tuple(x * self.pixel_size_cm for x in sensor_shape_px)
             self.sensor_shape_m = tuple(x * self.pixel_size_m for x in sensor_shape_px)
 
-            self.sensor_aperture_degrees = tuple(2 * atan(x / (2 * self.focal_length_cm)) for x in self.sensor_shape_cm)
-            self.cos_of_half_aperture_width = tuple(cos(radians(aperture / 2.0)) for aperture in self.sensor_aperture_degrees)
+            self.sensor_aperture_radians = tuple(2 * atan(x / (2 * self.focal_length_cm)) for x in self.sensor_shape_cm)
+            self.cos_of_half_aperture_width = tuple(cos(aperture / 2.0) for aperture in self.sensor_aperture_radians)
         else:
             self.sensor_shape_mm, self.sensor_shape_cm, self.sensor_shape_m = None, None, None
-            self.sensor_aperture_degrees, self.cos_of_half_aperture_width = None, None
+            self.sensor_aperture_radians, self.cos_of_half_aperture_width = None, None
 
     def px_to_mm(self, px: int | float) -> float:
         """

@@ -1,5 +1,6 @@
 import numpy as np
 from modules.camera_utils.camera import Camera
+from modules.camera_utils.homography import *
 
 
 class Ruler:
@@ -14,7 +15,8 @@ class Ruler:
         """
         self.camera = camera
 
-    def distance_to_object(self, object_length_px: float, real_object_length_cm: float) -> float:
+    def distance_to_object(self, object_length_px: float, real_object_length_cm: float,
+                           angle_degrees = 90, object_y1_px: int | float = 0) -> float:
         """
         Given the number of pixels that an object occupies in the image and the real
         height of the element, return the distance (in z) to the object in cm.
@@ -28,12 +30,22 @@ class Ruler:
         return: the distance to the object in cm
         """
         # Get the pixel size in centimeters
-        object_measure_in_sensor_cm = self.camera.px_to_cm(px=object_length_px)
+        if angle_degrees is None:
+            object_measure_in_sensor_cm = self.camera.px_to_cm(px=object_length_px)
+        else:
+            # Correct the perspective
+            object_measure_in_sensor_cm = correct_z_perspective(camera=self.camera,
+                                                                object_degrees=angle_degrees,
+                                                                object_y1_px=object_y1_px,
+                                                                object_y2_px=object_y1_px+object_length_px)
+        #object_measure_in_sensor_cm = self.camera.px_to_cm(px=object_length_px)
         magnification = real_object_length_cm / object_measure_in_sensor_cm
         distance_to_objective = self.camera.focal_length_cm * magnification
         return distance_to_objective
 
-    def object_length_in_cm(self, distance_to_object_cm: float, object_length_px: float) -> float:
+    def object_length_in_cm(self, distance_to_object_cm: float, object_length_px: float,
+                            angle_degrees : None | float | int = None,
+                            object_y1_px: int | float = 0) -> float:
         """
         Given the distance to the object in cm and the number of pixels that the object
         occupies in the image, return the real height of the object in cm.
@@ -41,7 +53,14 @@ class Ruler:
         object_length_px: the number of pixels that an object occupies in the image
         return: the real height of the object in cm
         """
-        object_measure_in_sensor_cm = self.camera.px_to_cm(px=object_length_px)
+        if angle_degrees is None:
+            object_measure_in_sensor_cm = self.camera.px_to_cm(px=object_length_px)
+        else:
+            # Correct the perspective
+            object_measure_in_sensor_cm = correct_z_perspective(camera=self.camera,
+                                                                object_degrees=angle_degrees,
+                                                                object_y1_px=object_y1_px,
+                                                                object_y2_px=object_y1_px+object_length_px)
         # Calculate the magnification from the distances (real_distance/focal_length)
         magnification = distance_to_object_cm / self.camera.focal_length_cm
         real_object_length_cm = object_measure_in_sensor_cm * magnification
