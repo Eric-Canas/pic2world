@@ -11,6 +11,9 @@ def correct_z_perspective(camera : Camera, object_degrees : float | int, object_
     lens aperture, return the object_y1_px to object_y2_px that would correspond if
     it was seen at 0 degrees.
     """
+    assert object_y1_px <= object_y2_px, "object_y1_px must be smaller than object_y2_px"
+    assert camera.sensor_shape_px is not None, "camera.sensor_shape_px must be known to correct perspective"
+
     object_perspective_radians = math.radians(object_degrees)
     object_length_px = object_y2_px - object_y1_px
     # Get the object length in centimeters
@@ -25,21 +28,10 @@ def correct_z_perspective(camera : Camera, object_degrees : float | int, object_
     return object_length_cm_perspective_corrected
 
 
-def calculate_field_of_view_affectation(camera, object_y1_px, object_y2_px):
-    sensor_half_height_px = camera.sensor_shape_px[0] // 2
-    if object_y2_px > sensor_half_height_px:
-        # There are px over the top half of the sensor
-        if object_y1_px > sensor_half_height_px:
-            # All px are on the bottom half of the sensor
-            top_half_px = 0
-            bottom_half_px = object_y2_px - object_y1_px
-        else:
-            top_half_px = sensor_half_height_px - object_y1_px
-            bottom_half_px = object_y2_px - sensor_half_height_px
-    else:
-        # All px are over the bottom half of the sensor
-        top_half_px = object_y2_px - object_y1_px
-        bottom_half_px = 0
+def calculate_field_of_view_affectation(camera : Camera, object_y1_px : int | float, object_y2_px : int | float):
+    sensor_half_height_px = camera.sensor_shape_px[0] / 2
+    top_half_px = min(sensor_half_height_px, object_y2_px) - min(object_y1_px, sensor_half_height_px)
+    bottom_half_px = max(sensor_half_height_px, object_y2_px) - max(object_y1_px, sensor_half_height_px)
     percentage_of_sensor = abs(top_half_px - bottom_half_px) / camera.sensor_shape_px[0]
     # Let's assume that field of view only affects when the angle is very hard
     object_field_of_view = camera.sensor_aperture_radians[0] * percentage_of_sensor

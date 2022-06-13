@@ -39,13 +39,13 @@ RULER_SAMPLE_IMGS = {
         Y1: 1910, # Y1 coordinate of the element
         DEGREES: 90 # Angle of the camera with respect to the element
     },
-    'Canon EOS R6 - Horizontal - 30 deg': {
-        FILE : 'dist-118-large-90-ange-33deg-canon-eos-r6.JPG',
+    'Canon EOS R6 - Horizontal - 60 deg': {
+        FILE : 'dist-118-large-90-ange-60eg-canon-eos-r6.JPG',
         CAMERA: CANON_EOS_R6_CAMERA,
         DISTANCE_CM: 118.0, # Distance to the element to measure
         ELEMENT_HEIGHT_IN_CM: 90.0, # Distance
         ELEMENT_LENGTH_IN_PX: 2320, # Number of pixels
         Y1: 1184,
-        DEGREES:  90-30 # Angle of the camera with respect to the element
+        DEGREES: 60 # Angle of the camera with respect to the element
     }
 }
