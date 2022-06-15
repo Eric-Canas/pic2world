@@ -1,34 +1,51 @@
+"""
+This file contains the class Ruler, which is used to calculate real-world distances
+from image distances and the camera parameters. All these calculations are based
+in the Thin-Lens Equation.
+Author: Eric Canas
+Mail: eric@ericcanas.com
+GitHub: https://github.com/Eric-Canas
+License: MIT
+"""
 from modules.camera_utils.homography import *
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from modules.camera_utils.camera import Camera
+from modules.camera_utils.camera import Camera
 
 class Ruler:
     """
-    This class implements the utils for, given a camera, transform pixel measures into
-    real world distances
+    This class functions are used to calculate the real-world distances from the image distances
+    and the camera parameters. All these calculations are based in the Thin-Lens Equation.
     """
 
     def __init__(self, camera: Camera):
         """
-        Initialize the ruler
+        Initializes the ruler.
         """
+        assert isinstance(camera, Camera), "The camera must be a Camera object"
         self.camera = camera
 
-    def distance_to_object(self, object_length_px: float, real_object_length_cm: float,
-                           angle_degrees: int|float|None = 90,
-                           object_y1_px: int | float = 0) -> float:
+    def distance_to_object_cm(self, object_length_px: float, real_object_length_cm: float,
+                              angle_degrees: int|float|None = 90,
+                              object_y1_px: int | float = 0) -> float:
         """
         Given the number of pixels that an object occupies in the image and the real
-        height of the element, return the distance (in z) to the object in cm.
+        height of the element, estimates the distance from the camera lens to the object in cm.
         Uses the Gauss formula for lenses (thin-lens equation) and the camera parameters
         to calculate it.
         This function assumes no distortion in the image.
-        Thin-lens equation: (1/object_distance) + (1/image_distance) = 1/focal_length
-        Other similarities: real_size/size_in_sensor = focal_length/distance_to_object
-        object_length_px: the number of pixels that an object occupies in the image
-        real_object_length_cm: the real height of the element in cm
-        return: the distance to the object in cm
+        Thin-lens equation -> (1/object_distance) + (1/image_distance) = 1/focal_length
+        Other similarities -> real_size/size_in_sensor = focal_length/distance_to_object
+        parameters:
+            object_length_px: int | float: The number of pixels that an object occupies in the image.
+            real_object_length_cm: float: The real height of the object in cm.
+            angle_degrees: int|float|None: The angle between the camera and the plain of the object in
+                                           which we are measuring the object length. If the object is
+                                           standing perpendicular to the camera (as usually), angle
+                                           is 90. Use None if the angle is unknown. Default: 90.
+            object_y1_px: int|float: The y coordinate of the top of the object in the image. It is only
+                                     used when the angle is very close to 0º (parallel), so the field of view
+                                     have a high impact on the measure. Default: 0.
+        return:
+            float: The distance from the camera lens to the object in cm.
         """
         # Get the pixel size in centimeters
         if angle_degrees is None:
@@ -47,11 +64,22 @@ class Ruler:
                             angle_degrees : None | float | int = None,
                             object_y1_px: int | float = 0) -> float:
         """
-        Given the distance to the object in cm and the number of pixels that the object
-        occupies in the image, return the real height of the object in cm.
-        distance_to_object_cm: the distance to the object in cm
-        object_length_px: the number of pixels that an object occupies in the image
-        return: the real height of the object in cm
+        Given the distance from the camera lens to the object in cm and the number of pixels that
+        an object occupies in the image, estimates the real height of the object in cm.
+        Uses the Gauss formula for lenses (thin-lens equation) and the camera parameters
+        to calculate it.
+        This function assumes no distortion in the image.
+        Thin-lens equation -> (1/object_distance) + (1/image_distance) = 1/focal_length
+        Other similarities -> real_size/size_in_sensor = focal_length/distance_to_object
+        parameters:
+            distance_to_object_cm: float: The distance from the camera lens to the object in cm.
+            object_length_px: int | float: The number of pixels that the object occupies in the image.
+            angle_degrees: int|float|None: The angle between the camera and the plain of the object in
+                                            which we are measuring the object length. If the object is
+                                            standing perpendicular to the camera (as usually), angle
+                                            is 90. Use None (or 90) if the angle is unknown. Default: 90.
+        return:
+            float: The real height of the object in cm.
         """
         if angle_degrees is None:
             object_measure_in_sensor_cm = self.camera.px_to_cm(px=object_length_px)

@@ -9,10 +9,10 @@ if __name__ == '__main__':
         print("For sample: {sample}".format(sample=sample))
         camera = sample_params[CAMERA]
         ruler = Ruler(camera = camera)
-        img_distance = ruler.distance_to_object(object_length_px=sample_params[ELEMENT_LENGTH_IN_PX],
-                                            real_object_length_cm=sample_params[ELEMENT_HEIGHT_IN_CM],
-                                                angle_degrees=sample_params[DEGREES],
-                                                object_y1_px=sample_params[Y1])
+        img_distance = ruler.distance_to_object_cm(object_length_px=sample_params[ELEMENT_LENGTH_IN_PX],
+                                                   real_object_length_cm=sample_params[ELEMENT_HEIGHT_IN_CM],
+                                                   angle_degrees=sample_params[DEGREES],
+                                                   object_y1_px=sample_params[Y1])
         print("\tDistance to object: Calculated: {calc} cm - Real {real} cm".format(calc=img_distance,
                                                                                   real=sample_params[DISTANCE_CM]))
         object_height = ruler.object_length_in_cm(object_length_px=sample_params[ELEMENT_LENGTH_IN_PX],
