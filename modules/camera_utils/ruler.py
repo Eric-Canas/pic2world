@@ -1,7 +1,7 @@
-import numpy as np
-from modules.camera_utils.camera import Camera
 from modules.camera_utils.homography import *
-
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from modules.camera_utils.camera import Camera
 
 class Ruler:
     """
@@ -16,7 +16,8 @@ class Ruler:
         self.camera = camera
 
     def distance_to_object(self, object_length_px: float, real_object_length_cm: float,
-                           angle_degrees = 90, object_y1_px: int | float = 0) -> float:
+                           angle_degrees: int|float|None = 90,
+                           object_y1_px: int | float = 0) -> float:
         """
         Given the number of pixels that an object occupies in the image and the real
         height of the element, return the distance (in z) to the object in cm.
@@ -38,7 +39,6 @@ class Ruler:
                                                                 object_degrees=angle_degrees,
                                                                 object_y1_px=object_y1_px,
                                                                 object_y2_px=object_y1_px+object_length_px)
-        #object_measure_in_sensor_cm = self.camera.px_to_cm(px=object_length_px)
         magnification = real_object_length_cm / object_measure_in_sensor_cm
         distance_to_objective = self.camera.focal_length_cm * magnification
         return distance_to_objective
