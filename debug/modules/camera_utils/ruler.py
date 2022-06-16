@@ -3,7 +3,6 @@ from debug.constants import RULER_SAMPLE_IMGS, CAMERA,\
                             DISTANCE_CM, ELEMENT_LENGTH_IN_PX, ELEMENT_HEIGHT_IN_CM, DEGREES, Y1
 
 if __name__ == '__main__':
-    #img = cv2.imread(os.path.join(IMAGES_PATH, RULER_SAMPLE_IMAGE[FILE]))
     # Get the camera
     for sample, sample_params in RULER_SAMPLE_IMGS.items():
         print("For sample: {sample}".format(sample=sample))
