@@ -12,18 +12,24 @@ import numpy as np
 from modules.geometry.geometry_utils import order_2d_corners_clockwise
 from matplotlib import pyplot as plt
 from matplotlib.backend_bases import MouseButton
+from warnings import warn
 
-def draw_polygon_by_clicking(img: np.ndarray, sides: int=4, verbose:bool=False):
+def draw_polygon_by_clicking(img: np.ndarray, sides: int=4, fallback_polygon: np.ndarray | list | tuple |None = None,
+                             verbose:bool=False) -> np.ndarray:
     """
     Draw a polygon on an image by clicking on the corners.
 
     Args:
-        img: The image to draw the polygon on
-        sides: The number of sides of the polygon
-        verbose: Whether to print the coordinates of the corners
+        img: Numpy array of shape (height, width, channels) or (height, width). The image over which to draw the polygon.
+        sides: Integer. The number of sides of the polygon. Default is 4.
+        fallback_polygon: Iterable of shape (sides, 2). The polygon to use if the user aborts the polygon definition. Default: None.
+        verbose: Boolean. If True, verbose the process. Default is False.
+    Returns:
+        Numpy array of shape (sides, 2). The polygon in format ((x1, y1), (x2, y2), ...).
     """
     assert img.ndim == 3 or img.ndim == 2, "Image must be a 2D or 3D array"
     assert type(sides) in {int, np.int32, np.int64}, "The number of sides must be at least 2"
+    assert fallback_polygon is None or len(fallback_polygon) == sides, "The fallback polygon must have the same number of sides than requested"
     if verbose:
         print("Click on the corners of the polygon")
     # Display the img
@@ -47,9 +53,13 @@ def draw_polygon_by_clicking(img: np.ndarray, sides: int=4, verbose:bool=False):
     else:
         repeat = yes_no_message_in_plt(msg="Set the points again?", yes="Repeat", no="Cancel", yes_color="yellow")
         if repeat:
-            return draw_polygon_by_clicking(img=img, sides=sides, verbose=verbose)
+            return draw_polygon_by_clicking(img=img, sides=sides, fallback_polygon=fallback_polygon, verbose=verbose)
         else:
-            return None
+            if fallback_polygon is not None:
+                warn("Polygon definition aborted. None is returned", category=UserWarning)
+            else:
+                warn("Polygon definition aborted, using fallback polygon", category=UserWarning)
+            return fallback_polygon
 
 def yes_no_message_in_plt(msg: str = "Is that correct?", yes: str = "Yes", no: str = "No",
                           yes_color: str = "green", no_color = "red") -> bool:

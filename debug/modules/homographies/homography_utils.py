@@ -12,4 +12,4 @@ if __name__ == '__main__':
         print("For sample: {sample}".format(sample=sample))
         img_file = os.path.join(IMAGES_PATH, sample_params[FILE])
         img = cv2.imread(img_file)
-        correct_polygon_perspective(img, origin_polygon=None, interactive=True)
+        correct_polygon_perspective(img, origin_polygon=None, interactive=True, verbose=True, output_shape=(600, 300))
