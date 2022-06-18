@@ -10,7 +10,7 @@ def correct_polygon_perspective(img: np.ndarray,
                                 origin_polygon: tuple[tuple[int|float, int|float], tuple[int|float, int|float],
                                                 tuple[int|float, int|float], tuple[int|float, int|float]] | np.ndarray |
                                                 None,
-                                output_shape : tuple[int, int] | list[int, int] | None = None,
+                                output_shape : tuple[int, int] | list[int, int] | np.ndarray | None = None,
                                 angle_degrees: int|float|None = None,
                                 camera: Camera | None = None,
                                 interactive: bool = False,

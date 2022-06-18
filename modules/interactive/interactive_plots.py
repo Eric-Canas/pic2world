@@ -15,7 +15,7 @@ from matplotlib.backend_bases import MouseButton
 from warnings import warn
 
 def draw_polygon_by_clicking(img: np.ndarray, sides: int=4, fallback_polygon: np.ndarray | list | tuple |None = None,
-                             verbose:bool=False) -> np.ndarray:
+                             as_numpy: bool = True, verbose:bool=False) -> np.ndarray:
     """
     Draw a polygon on an image by clicking on the corners.
 
@@ -48,7 +48,7 @@ def draw_polygon_by_clicking(img: np.ndarray, sides: int=4, fallback_polygon: np
     is_correct = yes_no_message_in_plt()
     # If the answer is yes, return the polygon
     if is_correct:
-        return polygon
+        return polygon if as_numpy else polygon.tolist()
     # If the answer is no, redraw the polygon
     else:
         repeat = yes_no_message_in_plt(msg="Set the points again?", yes="Repeat", no="Cancel", yes_color="yellow")

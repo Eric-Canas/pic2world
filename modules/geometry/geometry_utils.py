@@ -30,7 +30,7 @@ def order_2d_corners_clockwise(corners : np.ndarray | tuple[tuple[int | float, i
 
 def circumscribed_rectangle(polygon : np.ndarray | tuple[tuple[int | float, int | float], ...] |
                                       list[list[int | float, int | float], ...],
-                            shift_to_coord_0: bool = False) -> tuple[tuple[int | float, int | float], ...]:
+                            shift_to_coord_0: bool = False) -> tuple[tuple[int | float, int | float], ...] | np.ndarray:
     """
     Compute the rectangle that circumscribes the given polygon.
     Args:
@@ -44,10 +44,19 @@ def circumscribed_rectangle(polygon : np.ndarray | tuple[tuple[int | float, int 
     assert all(len(coords) == 2 for coords in polygon), "The corners must be 2D coordinates"
     assert len(polygon) >= 2, "The polygon must have at least 2 corners"
     assert type(shift_to_coord_0) is bool, "The shift_to_coord_0 must be a boolean"
-
-    x_min, x_max, y_min, y_max = get_x_y_min_max(polygon=polygon)
+    x_min, x_max, y_min, y_max = get_min_max_coords(polygon=polygon)
     if shift_to_coord_0:
         x_min, x_max, y_min, y_max = 0, x_max-x_min, 0, y_max-y_min
+
+    def as_np(polygon: np.ndarray, shift_to_coord_0: bool = False) -> np.ndarray:
+        """
+        Numpy version of the function to work efficiently when numpy arrays are used.
+        """
+        min_maxs = get_min_max_coords(polygon=polygon)
+        if shift_to_coord_0:
+            min_maxs[0] = 0
+            min_maxs[1]
+
     return bbox_to_polygon((x_min, y_min, x_max, y_max))
 
 def bbox_to_polygon(bbox : tuple[int | float, int | float, int | float, int | float] |
@@ -64,7 +73,7 @@ def bbox_to_polygon(bbox : tuple[int | float, int | float, int | float, int | fl
         (x3, y3), (x4, y4)) in format of tuple if bbox is a tuple or list, or numpy array if bbox is a numpy array.
     """
     assert len(bbox) == 4, "The bounding box must be a 4-tuple"
-    polygon = ((bbox[0], bbox[2]), (bbox[1], bbox[2]), (bbox[1], bbox[3]), (bbox[0], bbox[3]))
+    polygon = ((bbox[0], bbox[1]), (bbox[2], bbox[1]), (bbox[2], bbox[3]), (bbox[0], bbox[3]))
     return polygon
 def get_polygon_shape(polygon : np.ndarray | tuple[tuple[int | float, int | float], ...] |
                                  list[list[int | float, int | float], ...],
@@ -77,30 +86,37 @@ def get_polygon_shape(polygon : np.ndarray | tuple[tuple[int | float, int | floa
     Returns:
         Tuple of 2 integers or float. The width and height of the polygon.
     """
-    x_min, x_max, y_min, y_max = get_x_y_min_max(polygon=polygon)
+    x_min, x_max, y_min, y_max = get_min_max_coords(polygon=polygon)
     if as_int:
         return (int(x_max-x_min), int(y_max-y_min))
     else:
         return (x_max-x_min, y_max-y_min)
 
-def get_x_y_min_max(polygon : np.ndarray | tuple[tuple[int | float, int | float], ...] |
-                                 list[list[int | float, int | float], ...]) -> tuple[int | float, int | float, int | float, int | float]:
+def get_min_max_coords(polygon : np.ndarray | tuple[tuple[int | float, int | float], ...] |
+                                 list[list[int | float, int | float], ...]) -> \
+        tuple[tuple[int | float, ...], tuple[int | float,...]] | np.ndarray:
     """
-    Compute the minimum and maximum x and y coordinates of the given polygon.
+    Compute the minimum and maximums for each coordinate of the given N-D polygon.
     Args:
-         polygon: Iterable of 2D coordinates. The corners of the polygon in the form ((x1, y1), (x2, y2), ...).
+         polygon: Iterable of ND coordinates. The corners of the polygon in the form ((x1, y1,...), (x2, y2, ...), ...).
     Returns:
-        4-tuple of integers. The minimum and maximum x and y coordinates of the polygon. In the form (x_min, x_max,
-        y_min, y_max).
+        Tuple of 2 ND coordinates or numpy array. The minimum and maximums for each coordinate in the form
+        ((x_min, y_min, ...), (x_max, y_max, ...)). Given as tuple if polygon is a tuple or list, or numpy array if
+        polygon is a numpy array.
     """
-    assert type(polygon) in {np.ndarray, tuple, list}, f"The corners must be a numpy array, tuple or list. Got {type(polygon)}"
-    assert all(len(coords) == 2 for coords in polygon), "The corners must be 2D coordinates"
-    assert len(polygon) >= 2, "The polygon must have at least 2 corners"
+    def as_np(polygon: np.ndarray) -> np.ndarray:
+        """
+        Numpy version of the function to work efficiently when numpy arrays are used.
+        """
+        # minimums are at the first row, maximums at the second row
+        return np.vstack((np.min(polygon, axis=0), np.max(polygon, axis=0)), dtype=polygon.dtype)
 
-    x_min, x_max, y_min, y_max = float('inf'), -float('inf'), float('inf'), -float('inf')
-    for x, y in polygon:
-        x_min, x_max, y_min, y_max = min(x_min, x), max(x_max, x), min(y_min, y), max(y_max, y)
-    return (x_min, x_max, y_min, y_max)
+    assert len(polygon) >= 2, "The polygon must have at least 2 corners"
+    if type(polygon) is np.ndarray:
+        return as_np(polygon=polygon)
+    assert type(polygon) in {tuple, list}, f"The corners must be a numpy array, tuple or list. Got {type(polygon)}"
+    assert all(len(coords) == len(polygon[0]) for coords in polygon), "The corners must have the same number of dimensions"
+    return tuple(min(coord) for coord in zip(*polygon)), tuple(max(coord) for coord in zip(*polygon))
 
 def center_polygon(polygon: np.ndarray | tuple[tuple[int | float, int | float], ...] |
                    list[list[int | float, int | float], ...],
@@ -129,12 +145,12 @@ def center_polygon(polygon: np.ndarray | tuple[tuple[int | float, int | float], 
     assert len(polygon) >= 2, "The polygon must have at least 2 corners"
     assert type(output_shape) in {np.ndarray, tuple, list}, f"The output_shape must be a numpy array or tuple. Got {type(output_shape)}"
 
-    x_min, x_max, y_min, y_max = get_x_y_min_max(polygon=polygon)
+    x_min, x_max, y_min, y_max = get_min_max_coords(polygon=polygon)
     # If polygon is bigger than output_shape, resize it keeping the aspect ratio to match its size with the output_shape bounds
     if resize_on_bigger and (output_shape[0] < x_max-x_min or output_shape[1] < y_max-y_min)\
             or resize_on_lower and (output_shape[0] > x_max-x_min or output_shape[1] > y_max-y_min):
         polygon = resize_polygon(polygon=polygon, output_shape=output_shape, resize_pad=resize_pad)
-        x_min, x_max, y_min, y_max = get_x_y_min_max(polygon=polygon)
+        x_min, x_max, y_min, y_max = get_min_max_coords(polygon=polygon)
 
     # Calculate the center of both the polygon and the output shape
     x_center, y_center = (x_min+x_max)/2, (y_min+y_max)/2
@@ -163,7 +179,7 @@ def resize_polygon(polygon: np.ndarray | tuple[tuple[int | float, int | float], 
     assert all(len(coords) == len(output_shape) for coords in polygon), "The corners must be 2D coordinates"
     assert len(polygon) >= 2, "The polygon must have at least 2 corners"
     assert 0. <= resize_pad <= (1. - 1e-3), "The resize_pad must be between 0 and 1"
-    x_min, x_max, y_min, y_max = get_x_y_min_max(polygon=polygon)
+    x_min, x_max, y_min, y_max = get_min_max_coords(polygon=polygon)
     original_aspect_ratio = (x_max-x_min)/(y_max-y_min)
     x_min, x_max, y_min, y_max = x_min-resize_pad*(x_max-x_min), x_max+resize_pad*(x_max-x_min),\
                                  y_min-resize_pad*(y_max-y_min), y_max+resize_pad*(y_max-y_min)
@@ -175,7 +191,7 @@ def resize_polygon(polygon: np.ndarray | tuple[tuple[int | float, int | float], 
     new_polygon = tuple((x/max_ratio, y/max_ratio) for x, y in polygon)
     # Shift to correct the resize pad:
     if resize_pad > 0.:
-        x_min, x_max, y_min, y_max = get_x_y_min_max(polygon=new_polygon)
+        x_min, x_max, y_min, y_max = get_min_max_coords(polygon=new_polygon)
         x_shift, y_shift = resize_pad*(x_max-x_min), resize_pad*(y_max-y_min)
         new_polygon = tuple((x+x_shift, y+y_shift) for x, y in new_polygon)
         final_aspect_ratio = (x_max-x_min)/(y_max-y_min)
