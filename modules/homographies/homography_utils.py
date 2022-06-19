@@ -75,7 +75,7 @@ def __compute_output_polygon(origin_polygon: tuple[tuple[int|float, int|float], 
                                                 tuple[int|float, int|float], tuple[int|float, int|float]] | np.ndarray,
                              start_at_0_coord: bool = True,
                              angle_degrees: int|float|None = None, camera: Camera = None,
-                             verbose: bool = False) -> tuple[tuple[int|float, int|float], ...]:
+                             verbose: bool = False) -> tuple[tuple[int|float, int|float], ...] | np.ndarray:
     """
     Computes the output polygon given an origin_polygon.
     Args:
@@ -101,6 +101,6 @@ def __compute_output_polygon(origin_polygon: tuple[tuple[int|float, int|float], 
     # If angle is not given, assume that it is not relevant, so just output a rectangle circumscribing the polygon
     if angle_degrees is None:
         # Calculate the circumscribed rectangle
-        return circumscribed_rectangle(polygon=origin_polygon, shift_to_coord_0=start_at_0_coord)
+        return circumscribed_rectangle(polygon=origin_polygon, shift_to_coord=0. if start_at_0_coord else None)
     else:
         raise NotImplementedError("Not implemented yet")
