@@ -14,5 +14,6 @@ if __name__ == '__main__':
         print("For sample: {sample}".format(sample=sample))
         img_file = os.path.join(IMAGES_PATH, sample_params[FILE])
         img = cv2.imread(img_file)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         correct_polygon_perspective(img, origin_polygon=None, interactive=True, angle_degrees=sample_params[DEGREES],
-                                    camera=sample_params[CAMERA], verbose=True, output_shape=np.array((600, 300)))
+                                    output_shape=(600, 300), pad = 0.05, verbose=True)
