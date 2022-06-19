@@ -123,7 +123,7 @@ def get_polygon_shape(polygon : np.ndarray | tuple[tuple[int | float, ...], ...]
         Tuple of N integers or float. The (width, height, [...]) of the polygon.
     """
     def as_np(mins: np.ndarray, maxs: np.ndarray, as_int32: bool = False) -> np.ndarray:
-        shape = mins-maxs
+        shape = maxs-mins
         if as_int32:
             shape = shape.astype(np.int32)
         return shape
@@ -160,7 +160,7 @@ def center_polygon(polygon: np.ndarray | tuple[tuple[int | float, ...], ...] | l
     def as_np(polygon: np.ndarray, mins: np.ndarray, maxs: np.ndarray, output_shape: np.ndarray | tuple[int | float, ...] |
                                                                 list[int | float, ...]) -> np.ndarray:
         centers = (maxs+mins)*0.5
-        if type(output_shape) != np.ndarray:
+        if type(output_shape) is not np.ndarray:
             output_shape = np.array(output_shape, dtype=centers.dtype)
         elif output_shape.dtype != centers.dtype:
             output_shape = output_shape.astype(dtype=centers.dtype)
@@ -185,7 +185,7 @@ def center_polygon(polygon: np.ndarray | tuple[tuple[int | float, ...], ...] | l
     mins, maxs = get_min_max_coords(polygon=polygon)
     if resize_on_bigger and any(shape < maxi - mini for (shape, maxi, mini) in zip(output_shape, maxs, mins))\
         or resize_on_lower and any(shape > maxi - mini for (shape, maxi, mini) in zip(output_shape, maxs, mins)):
-        polygon = resize_polygon(polygon=polygon, output_shape=output_shape, resize_pad=resize_pad)
+        polygon = fit_polygon_in_shape(polygon=polygon, output_shape=output_shape, resize_pad=resize_pad)
         mins, maxs = get_min_max_coords(polygon=polygon)
 
     if type(polygon) is np.ndarray:
@@ -198,9 +198,9 @@ def center_polygon(polygon: np.ndarray | tuple[tuple[int | float, ...], ...] | l
         shifts = tuple(out - center for out, center in zip(output_centers, centers))
         return tuple(tuple(coord+shift for coord, shift in zip(coords, shifts)) for coords in polygon)
 
-def resize_polygon(polygon: np.ndarray | tuple[tuple[int | float, ...], ...] | list[list[int | float, ...], ...],
-                   output_shape: np.ndarray | tuple[int | float, ...] | list[int | float, ...],
-                   resize_pad: float = 0.) -> tuple[tuple[int | float, ...], ...] | np.ndarray:
+def fit_polygon_in_shape(polygon: np.ndarray | tuple[tuple[int | float, ...], ...] | list[list[int | float, ...], ...],
+                         output_shape: np.ndarray | tuple[int | float, ...] | list[int | float, ...],
+                         resize_pad: float = 0.) -> tuple[tuple[int | float, ...], ...] | np.ndarray:
     """
     Resize the polygon to fit its maximum size with the bounds of the given output_shape. Keeping its aspect ratio.
     Args:
@@ -253,3 +253,36 @@ def resize_polygon(polygon: np.ndarray | tuple[tuple[int | float, ...], ...] | l
             new_polygon = tuple(tuple(coord+shift for coord, shift in zip(coords, shifts))
                                 for coords in new_polygon)
         return new_polygon
+
+def resize_polygon(polygon: np.ndarray | tuple[tuple[int | float, ...], ...] | list[list[int | float, ...], ...],
+                    new_size: np.ndarray | tuple[int | float | None, ...] | list[int | float | None, ...]) -> \
+        tuple[tuple[int | float, ...], ...] | np.ndarray:
+    """
+    Resize each one of the polygon dimensions to the new size.
+    Args:
+            polygon: Iterable of ND coordinates. The corners of the polygon in the form ((x1, y1, [...]), (x2, y2, [...]), ...).
+            new_size: Tuple of N integers or float. The shape of the output element, in the form (width|None, height|None, [...]).
+                            The polygon will be resized to fit this shape. If any of new_size axis is None, that
+                            dimension will not be resized.
+    Returns:
+        Tuple of ND coordinates or numpy array. The corners of the polygon, resized to fit the new_size. In the form
+         ((x1, y1, [...]), (x2, y2, [...]), ...). If new_size is a numpy array, the output will be a numpy array.
+    """
+    def as_np(polygon: np.ndarray, mins: np.ndarray, maxs: np.ndarray, new_size: np.ndarray) -> np.ndarray:
+        current_size = maxs - mins
+        polygon = polygon.copy()
+        for i, size in enumerate(new_size):
+            if size is not None:
+                polygon[:, i] *= (size / current_size[i])
+        return polygon
+
+    mins, maxs = get_min_max_coords(polygon=polygon)
+    if type(polygon) is np.ndarray:
+        assert polygon.ndim == 2, f"The corners must be a 2D array. Got {polygon.ndim}"
+        assert polygon.shape[1] == len(new_size), f"The number of coordinates must match the new size. " \
+                                                        f"Expected {len(new_size)}, got {polygon.shape[1]}"
+        return as_np(polygon=polygon, mins=mins, maxs=maxs, new_size=new_size)
+    else:
+        assert type(polygon) in {tuple, list}, f"The corners must be a numpy array, tuple or list. Got {type(polygon)}"
+        assert all(len(coords) == len(new_size) for coords in polygon), "The corners must be 2D coordinates"
+        return tuple(as_np(polygon=coords, mins=mins, maxs=maxs, new_size=new_size) for coords in polygon)

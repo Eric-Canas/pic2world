@@ -1,8 +1,9 @@
 import numpy as np
 from modules.interactive.interactive_plots import draw_polygon_by_clicking
-from modules.geometry.geometry_utils import circumscribed_rectangle, get_polygon_shape, center_polygon
+from modules.geometry.geometry_utils import circumscribed_rectangle, get_polygon_shape, center_polygon, resize_polygon
 from warnings import warn
 from modules.camera_utils.camera import Camera
+import math
 import cv2
 from matplotlib import pyplot as plt
 
@@ -74,7 +75,7 @@ def correct_polygon_perspective(img: np.ndarray,
 def __compute_output_polygon(origin_polygon: tuple[tuple[int|float, int|float], tuple[int|float, int|float],
                                                 tuple[int|float, int|float], tuple[int|float, int|float]] | np.ndarray,
                              start_at_0_coord: bool = True,
-                             angle_degrees: int|float|None = None, camera: Camera = None,
+                             angle_degrees: int|float|None|tuple[int | float | None, int | float | None] = None, camera: Camera = None,
                              verbose: bool = False) -> tuple[tuple[int|float, int|float], ...] | np.ndarray:
     """
     Computes the output polygon given an origin_polygon.
@@ -82,10 +83,10 @@ def __compute_output_polygon(origin_polygon: tuple[tuple[int|float, int|float], 
         origin_polygon: Tuple of shape (sides, 2). The polygon to use as a reference.
         start_at_0_coord: Boolean. If True, the output polygon will start at (0, 0). If False, it will use the
                              origin_polygon coordinates. Default is True.
-        angle_degrees: Float, Integer or None. Angle of the camera with which the image was taken.
-                        If known, it will be used to infer the aspect ratio of the output image. Default is None.
-        camera: Camera object. If given, it will be used to infer the aspect ratio of the output rectangle together with
-                the angle.
+        angle_degrees: Float, Integer or None or tuple of shape (2). Angle of the camera with which the image was taken.
+                        If known, it will be used to infer the aspect ratio of the output image. If unique value is given,
+                        it will be assumed to be the angle in height. If tuple of shape (2), it will be assumed to be
+                        given as (width, height). Default is None.
         verbose: Boolean. If True, verbose the process. Default is False.
     Returns:
         Tuple of shape (4, 2). The output polygon coordinates in the form ((x1, y1), (x2, y2), (x3, y3), (x4, y4)).
@@ -99,8 +100,25 @@ def __compute_output_polygon(origin_polygon: tuple[tuple[int|float, int|float], 
     assert type(start_at_0_coord) is bool, "start_at_0_coord must be a boolean"
 
     # If angle is not given, assume that it is not relevant, so just output a rectangle circumscribing the polygon
-    if angle_degrees is None:
-        # Calculate the circumscribed rectangle
-        return circumscribed_rectangle(polygon=origin_polygon, shift_to_coord=0. if start_at_0_coord else None)
-    else:
-        raise NotImplementedError("Not implemented yet")
+    if angle_degrees is not None:
+        if type(angle_degrees) in {int, float, np.int32, np.float32, np.int64, np.float64}:
+            angle_degrees = (None, angle_degrees)
+        elif type(angle_degrees) in {tuple, list, np.ndarray}:
+            assert len(angle_degrees) == 2, "angle_degrees must have 2 elements"
+            assert type(angle_degrees[0]) in {type(None), int, float, np.int32, np.float32, np.int64, np.float64}, \
+                f"angle_degrees[0] must be a number or None. Got {type(angle_degrees[0])}"
+        else:
+            raise ValueError(f"angle_degrees must be a number or None or a tuple of shape (2). Got {type(angle_degrees)}")
+
+        output_size = []
+        for i, angle in enumerate(angle_degrees):
+            if angle is None:
+                output_size.append(None)
+            else:
+                object_perspective_radians = math.radians(angle)
+                object_px_shape = get_polygon_shape(polygon=origin_polygon, as_int=True)[i]
+                object_height_px_perspective_corrected = object_px_shape / np.cos(object_perspective_radians)
+                output_size.append(object_height_px_perspective_corrected)
+        origin_polygon = resize_polygon(polygon=origin_polygon, new_size=tuple(output_size))
+    # Calculate the circumscribed rectangle
+    return circumscribed_rectangle(polygon=origin_polygon, shift_to_coord=0. if start_at_0_coord else None)
