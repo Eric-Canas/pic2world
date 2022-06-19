@@ -63,8 +63,8 @@ def correct_polygon_perspective(img: np.ndarray,
         output_polygon = center_polygon(polygon=output_polygon, output_shape=output_shape)
     # Transform it to a numpy array
     origin_polygon, output_polygon = np.array(origin_polygon, dtype=np.float32), np.array(output_polygon, dtype=np.float32)
-    H_matrix = cv2.getPerspectiveTransform(origin_polygon, output_polygon)
-    img = cv2.warpPerspective(img, H_matrix, dsize=output_shape)
+    H_matrix = cv2.getPerspectiveTransform(src=origin_polygon, dst=output_polygon)
+    img = cv2.warpPerspective(src=img, M=H_matrix, dsize=output_shape)
     if verbose:
         plt.clf()
         plt.imshow(img)

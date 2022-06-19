@@ -140,7 +140,7 @@ def center_polygon(polygon: np.ndarray | tuple[tuple[int | float, ...], ...] | l
                    output_shape: np.ndarray | tuple[int | float, ...] | list[int | float, ...],
                    resize_on_bigger: bool = True,
                    resize_on_lower: bool = False,
-                   resize_pad: float = 0.05) -> tuple[tuple[int | float, ...], ...] | np.ndarray:
+                   resize_pad: float = 0.) -> tuple[tuple[int | float, ...], ...] | np.ndarray:
     """
     Center the coordinates of the polygon in the given shape.
     Args:
