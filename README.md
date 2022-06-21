@@ -1,20 +1,21 @@
-# Pic2World
+# Pic2World 🌍
 <b>Pic2World</b> is a toolbox for inferring <b>Real World Information</b> such as <b>distances</b> from <b>Pictures</b> and <b>Camera Intrinsics</b>.
 It also offers a set of <b>Geometry</b> and <b>Image Manipulation</b> tools, that help to deal with <b>Homographies</b>
 and <b>Perspective</b> while maintaining the <b>Real World</b> coherence.
 
-## Installation
+## ⬇️ Installation
 You can install Pic2World [via pip](https://pypi.org/project/pic2world/), by running the following command:
 ```bash
 pip install pic2world
 ```
 
-## Usage
+## ⌨️ Usage
 Pic2World includes 4 main modules:
 1. [`pic2world.camera_utils`](#camera-utils): Tools based on [Thin-Lens Equation](https://en.wikipedia.org/wiki/Thin_lens) that allow to transform **Pixel Measures** into **Real World Distances**, when the _intrinsic parameters_ of the **camera** (_Inclination_, _Focal Length_ and _Pixel Size_) and the **scene** (one of _Real Object Lenght_ or _Distance to Object_) are **known**.
 2. [`pic2world.homographies`](#homographies): Tools based on **Homographies** that help to deal with **Perspective Correction**. Designed to produce visualizations coherent with the **Real World** inferred information.
 3. `pic2world.geometry`: **Geometry** tools that help to deal with _N-Dimensional_ polygon transformations.
 4. `pic2world.interactive`: **Interactive Tools**, based on [matplotlib](https://matplotlib.org/), that can be used for **asking** information about the image to the user. For example, it include functions to let the user _define_ or _confirm_ a polygon over the image.
+
 
 ### Camera Utils
 **Camera Utils** include two main classes, [`pic2world.camera_utils.camera`](./modules/camera_utils/camera.py') and [`pic2world.camera_utils.ruler`](./modules/camera_utils/ruler.py').
