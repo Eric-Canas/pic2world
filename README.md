@@ -17,21 +17,23 @@ Pic2World includes 4 main modules:
 4. `pic2world.interactive`: **Interactive Tools**, based on [matplotlib](https://matplotlib.org/), that can be used for **asking** information about the image to the user. For example, it include functions to let the user _define_ or _confirm_ a polygon over the image.
 
 ### Camera Utils
-Camera Utils include two main classes, `pic2world.camera_utils.camera` and `pic2world.camera_utils.ruler`.
+**Camera Utils** include two main classes, [`pic2world.camera_utils.camera`](./modules/camera_utils/camera.py') and [`pic2world.camera_utils.ruler`](./modules/camera_utils/ruler.py').
 
 
-`Camera` is used to contain all Camera Intrinsics information:
-```python
-from pic2world.camera_utils.camera import Camera
-# Build the Intrinsics of a Canon R6 
-CANON_EOS_R6_CAMERA = Camera(
-    pixel_size_mm=8.18/1000.0, # Pixel size of the camera sensor
-    focal_length_mm=50, # Focal length of the mounted lens
-    sensor_shape_px=(5472, 3648) # (width, height) of the sensor. Can be setted as None. Only used when images are taken from hard angles.
-)
-```
+1. `Camera` is used to model the **Camera**. It receives its intrinsics through the constructor ( _Pixel Size_, _Focal Length_ and, optionally, _Sensor Shape_), and internally calculates and store the rest of intrinsics. For example, if we would want to analize images taken from a **Canon R6** mounting a **50 mm** lens, we would set it as follows: 
+    ```python
+    from pic2world.camera_utils.camera import Camera
+    # Build the Intrinsics of a Canon R6 
+    CANON_EOS_R6_CAMERA = Camera(
+        pixel_size_mm=8.18/1000.0, # Pixel size of the camera sensor. 8.18 μm
+        focal_length_mm=50, # Focal length of the mounted lens
+        sensor_shape_px=(5472, 3648) # (width, height) of the sensor. Default: None. Only used for inclinations close to 0º.
+    )
+    ```
+    There are some preset _camera models_ that can be exported from [`pic2world.camera_utils.config`](./modules/camera_utils/config.py)
 
-`Ruler` is used to calculate real world distances from pixel measures and camera intrinsics:
+
+2. `Ruler` is used to calculate real world distances from pixel measures and camera intrinsics:
 
 ##### Calculating Distance between the lens and the object when the Real Length is known
 
