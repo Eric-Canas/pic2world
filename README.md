@@ -87,7 +87,8 @@ correct_polygon_perspective(img=None,
                             pad= 0.05) # Padding between the limits of the rectangle and the border of the output image.
 ```
 
-<img src="./debug/resources/<homography-example.gif" width="40%" align="left" alt="Homography - Example of usage">
+<img src="./debug/resources/homography-example.gif" width="500" alt="Homography - Example of usage">
+<br clear="both"/>
 
 ## Note
 
