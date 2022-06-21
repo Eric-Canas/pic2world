@@ -35,7 +35,7 @@ Pic2World includes 4 main modules:
 
 
 2. `Ruler` is the object used to transform **Pixel Measures** to **Real World Distances** using a defined `Camera` and some of the **Scene Intrinsics**. Let's build an example using the following image:
-
+   <img src="./debug/resources/Distance-140cm-angle-60-deg-Height-90cm-1969px-CANON-EOS-R6.JPG" width="50%" align="left">
 
     That's the information we know for that image:
     * **Camera**: _Canon EOS R6_.
