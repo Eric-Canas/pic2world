@@ -19,7 +19,13 @@ CANON_EOS_R6_CAMERA = Camera( # Canon EOS R6
         pixel_size_mm=8.18/1000.0, # Not totally sure. Assuming it is equivalent to Canon EOS 1D Mark II
         focal_length_mm=50, # The one I commonly use
         # aperture is f/1.4,
-        sensor_shape_px=(3648, 5472)
+        sensor_shape_px=(5472, 3648)
+    )
+IPHONE_13_PRO_MAX_MAIN_CAMERA = Camera( # Apple iPhone 13 Pro Max - Main
+        pixel_size_mm=1.9*sqrt(4)/1000.0,
+        focal_length_mm=6,
+        # aperture is f/1.5,
+        sensor_shape_px=(4032, 3024),
     )
 
 CAMERAS = {

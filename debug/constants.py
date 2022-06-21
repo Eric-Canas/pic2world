@@ -1,5 +1,5 @@
 import os
-from modules.camera_utils.config import REDMI_NOTE_11_PRO_MAIN_CAMERA, CANON_EOS_R6_CAMERA
+from modules.camera_utils.config import REDMI_NOTE_11_PRO_MAIN_CAMERA, CANON_EOS_R6_CAMERA, IPHONE_13_PRO_MAX_MAIN_CAMERA
 
 CAMERA = "camera"
 FILE = "file"
@@ -20,6 +20,15 @@ RULER_SAMPLE_IMGS = {
         ELEMENT_LENGTH_IN_PX: 2873, # Number of pixels
         Y1: 0,
         DEGREES: 0 # Angle of the element to measure
+    },
+    'CANON EOS R6 - Pic2World':{
+      FILE: 'Distance-140cm-angle-60-deg-Height-90cm-CANON-EOS-R6.JPG',
+        CAMERA: CANON_EOS_R6_CAMERA,
+        DISTANCE_CM: 140,
+        ELEMENT_HEIGHT_IN_CM: 90,
+        ELEMENT_LENGTH_IN_PX: 1969,
+        Y1: 0,
+        DEGREES: 60
     },
     'Canon EOS R6 - Vertical': {
         FILE: "dist-300-meter-150-angle-0-camera-canon-eos-R6.JPG",
@@ -47,5 +56,15 @@ RULER_SAMPLE_IMGS = {
         ELEMENT_LENGTH_IN_PX: 2320, # Number of pixels
         Y1: 1184,
         DEGREES: 60 # Angle of the camera with respect to the element
-    }
+    },
+    'Iphone 13 Pro Max - Hamburguers - Ham 1 - zenith': {
+        FILE : 'large-11-5-cm - angle-5-.jpeg',
+        CAMERA: IPHONE_13_PRO_MAX_MAIN_CAMERA,
+        DISTANCE_CM: 57, # Distance to the element to measure
+        ELEMENT_HEIGHT_IN_CM: 11.5, # Distance
+        ELEMENT_LENGTH_IN_PX: 315, # More or less
+        Y1: 0,
+        DEGREES: 5 # Angle of the camera with respect to the element
+    },
+
 }

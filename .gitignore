@@ -1,5 +1,4 @@
 .idea/
 *.pyc
-debug/resources/
 modules/pic2world.egg-info/
 dist/

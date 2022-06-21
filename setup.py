@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pic2world',
-    version='0.4',
+    version='0.4.1',
     packages=find_packages('modules'),
     url='https://github.com/Eric-Canas/pic2world',
     license='MIT',
