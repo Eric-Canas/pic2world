@@ -1,5 +1,5 @@
 # Pic2World
-<b>Pic2World</b> is a toolbox for inferring <b>Real World Information</b> from <b>Pictures</b> and <b>Camera Intrinsics</b>.
+<b>Pic2World</b> is a toolbox for inferring <b>Real World Information</b> such as <b>distances</b> from <b>Pictures</b> and <b>Camera Intrinsics</b>.
 It also offers a set of <b>Geometry</b> and <b>Image Manipulation</b> tools, that help to deal with <b>Homographies</b>
 and <b>Perspective</b> while maintaining the <b>Real World</b> coherence.
 
@@ -11,9 +11,9 @@ pip install pic2world
 
 ## Usage
 Pic2World includes 4 main modules:
-1. `pic2world.geometry`: Geometry tools for dealing with polygon transformations.
-2. `pic2world.camera_utils`: Tools based on [Gauss Thin-Lens Equation](https://en.wikipedia.org/wiki/Thin_lens) for measuring real world distances from pixel measures and camera intrinsics.
-3. `pic2world.homographies`: Tools for dealing with Homographies. Designed to produce visualizations coherent with Real World inferred data.
+1. [`pic2world.camera_utils`](#camera-utils): Tools based on [Thin-Lens Equation](https://en.wikipedia.org/wiki/Thin_lens) that allow to transform **Pixel Measures** into **Real World Distances**, when the _intrinsic parameters_ of the **camer** (_Inclination_, _Focal Length_ and _Pixel Size_) and the **scene** (one of _Real Object Lenght_ or _Distance to Object_) are **known**.
+2. `pic2world.homographies`: Tools for dealing with Homographies. Designed to produce visualizations coherent with Real World inferred data.
+3. `pic2world.geometry`: Geometry tools for dealing with polygon transformations.
 4. `pic2world.interactive`: Tools for interactive visualization, based on [matplotlib](https://matplotlib.org/). Help to define polygons and ask questions to the user. Useful for debugging.
 
 ### Camera Utils
@@ -27,7 +27,7 @@ from pic2world.camera_utils.camera import Camera
 CANON_EOS_R6_CAMERA = Camera(
     pixel_size_mm=8.18/1000.0, # Pixel size of the camera sensor
     focal_length_mm=50, # Focal length of the mounted lens
-    sensor_shape_px=(3648, 5472) # (height, width) of the sensor. Can be setted as None. Only used when images are taken from hard angles.
+    sensor_shape_px=(5472, 3648) # (width, height) of the sensor. Can be setted as None. Only used when images are taken from hard angles.
 )
 ```
 
