@@ -3,13 +3,12 @@ import cv2
 import numpy as np
 
 from modules.homographies.homography_utils import *
-from debug.constants import RULER_SAMPLE_IMGS, CAMERA, IMAGES_PATH,\
-                            DISTANCE_CM, ELEMENT_LENGTH_IN_PX, ELEMENT_HEIGHT_IN_CM, DEGREES, FILE
+from debug.constants import RULER_SAMPLE_IMGS, IMAGES_PATH, DEGREES, FILE
 
 
 if __name__ == '__main__':
     # Get the camera
-    RULER_SAMPLE_IMGS = {'Canon EOS R6 - Horizontal - 60 deg' : RULER_SAMPLE_IMGS['Canon EOS R6 - Horizontal - 60 deg']}
+    RULER_SAMPLE_IMGS = {'CANON EOS R6 - Pic2World' : RULER_SAMPLE_IMGS['CANON EOS R6 - Pic2World']}
     for sample, sample_params in RULER_SAMPLE_IMGS.items():
         print("For sample: {sample}".format(sample=sample))
         img_file = os.path.join(IMAGES_PATH, sample_params[FILE])

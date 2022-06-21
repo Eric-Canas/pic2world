@@ -22,7 +22,7 @@ RULER_SAMPLE_IMGS = {
         DEGREES: 0 # Angle of the element to measure
     },
     'CANON EOS R6 - Pic2World':{
-      FILE: 'Distance-140cm-angle-60-deg-Height-90cm-CANON-EOS-R6.JPG',
+      FILE: 'Distance-140cm-angle-60-deg-Height-90cm-1969px-CANON-EOS-R6.JPG',
         CAMERA: CANON_EOS_R6_CAMERA,
         DISTANCE_CM: 140,
         ELEMENT_HEIGHT_IN_CM: 90,
