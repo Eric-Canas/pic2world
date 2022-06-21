@@ -21,7 +21,7 @@ Pic2World includes 4 main modules:
 **Camera Utils** include two main classes, [`pic2world.camera_utils.camera`](./modules/camera_utils/camera.py') and [`pic2world.camera_utils.ruler`](./modules/camera_utils/ruler.py').
 
 
-1. `Camera` is used to model the **Camera**. It receives its intrinsics through the constructor ( _Pixel Size_, _Focal Length_ and, optionally, _Sensor Shape_), and internally calculates and store the rest of intrinsics. For example, if we would want to analize images taken from a **Canon R6** mounting a **50 mm** lens, we would set it as follows: 
+1. `Camera` is used to model the **Camera**. It receives its intrinsics through the constructor ( _Pixel Size_, _Focal Length_ and, optionally, _Sensor Shape_), and internally calculates and store the rest of intrinsics. For example, if we would want to analize images taken from a **Canon EOS R6** mounting a **50 mm** lens, we would set it as follows: 
     ```python
     from pic2world.camera_utils.camera import Camera
     # Build the Intrinsics of a Canon R6 
@@ -34,29 +34,32 @@ Pic2World includes 4 main modules:
     There are some preset _camera models_ that can be exported from [`pic2world.camera_utils.config`](./modules/camera_utils/config.py)
 
 
-2. `Ruler` is used to calculate real world distances from pixel measures and camera intrinsics:
-
-##### Calculating Distance between the lens and the object when the Real Length is known
+2. `Ruler` is the object used to transform **Pixel Measures** to **Real World Distances** using a defined `Camera` and some of the **Scene Intrinsics**. Let's build an example using the following image:
 
 
+    That's the information we know for that image:
+    * **Camera**: _Canon EOS R6_.
+    * **3 DIN-A4 Height**: _3*30 cm_.
+    * **Distance from lens to first DIN-A4**: _140 cm_.
+    * **Angle of the camera**: _30 degrees_.
+
+First, we create the Ruler object
 ```python
 from pic2world.camera_utils.ruler import Ruler
 # Create a Ruler object
 ruler = Ruler(camera=CANON_EOS_R6_CAMERA)
-distance_to_img = ruler.distance_to_object_cm(object_length_px=2320, # Length of the object in pixels
+``` 
+
+Then, knowing how many pixels does the **3 DIN-A4** occuppy in our image we can make the following inferences:
+
+```python
+# Let's assume that we don't know the distance between the lens and the object and calculate it.
+distance_lens_to_object = ruler.distance_to_object_cm(object_length_px=2320, # Length of the object in pixels
                                               real_object_length_cm=3*30.0, # Real Length of 3 DIN-A4 papers.
                                               angle_degrees=60) # Angle with which the image was taken (0 would mean zenith).
 ```
 
 ```python
-# Print the distance in cm.
->>> Distance to object -> Calculated: 118.5608 cm [Real: 118.0 cm]
-```
-
-##### Calculating Real Length of an object when the distance between it and the camera lens is known
-
-```python
-# Assume the same camera as above
 object_height = ruler.object_length_in_cm(object_length_px=2320, # Length of a vertical of the object in pixels,
                                                   distance_to_object_cm=118.0, # Distance between the object and the camera lens in cm
                                                   angle_degrees=60) # Angle with which the image was taken (0 would mean zenith).
