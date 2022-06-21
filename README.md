@@ -28,20 +28,22 @@ Pic2World includes 4 main modules:
     CANON_EOS_R6_CAMERA = Camera(
         pixel_size_mm=8.18/1000.0, # Pixel size of the camera sensor. 8.18 μm
         focal_length_mm=50, # Focal length of the mounted lens
-        sensor_shape_px=(5472, 3648) # (width, height) of the sensor. Default: None. Only used for inclinations close to 0º.
-    )
+        sensor_shape_px=(5472, 3648)) # (width, height) of the sensor. Default: None. Only used for inclinations close to 0º.
     ```
     There are some preset _camera models_ that can be exported from [`pic2world.camera_utils.config`](./modules/camera_utils/config.py)
 
 
 2. `Ruler` is the object used to transform **Pixel Measures** to **Real World Distances** using a defined `Camera` and some of the **Scene Intrinsics**. Let's build an example using the following image:
-   <img src="./debug/resources/Distance-140cm-angle-60-deg-Height-90cm-1969px-CANON-EOS-R6.JPG" width="50%" align="left">
+   <p align="center">
+   <img src="./debug/resources/Distance-140cm-angle-60-deg-Height-90cm-1969px-CANON-EOS-R6.JPG" width="40%" align="left" alt="Sample Image for Ruler">
 
-    That's the information we know for that image:
+    That's the information we know for this image:
     * **Camera**: _Canon EOS R6_.
     * **3 DIN-A4 Height**: _3*30 cm_.
     * **Distance from lens to first DIN-A4**: _140 cm_.
-    * **Angle of the camera**: _30 degrees_.
+    * **Angle of the camera**: _60 degrees_.
+    </p>
+<br clear="both">
 
 First, we create the Ruler object
 ```python
@@ -54,20 +56,20 @@ Then, knowing how many pixels does the **3 DIN-A4** occuppy in our image we can 
 
 ```python
 # Let's assume that we don't know the distance between the lens and the object and calculate it.
-distance_lens_to_object = ruler.distance_to_object_cm(object_length_px=2320, # Length of the object in pixels
-                                              real_object_length_cm=3*30.0, # Real Length of 3 DIN-A4 papers.
-                                              angle_degrees=60) # Angle with which the image was taken (0 would mean zenith).
+distance_lens_to_object = ruler.distance_to_object_cm(object_length_px=1969, # Height of the object to measure in pixels
+                                                      real_object_length_cm=3*30.0, # Real heigth of the 3 DIN-A4 papers.
+                                                      angle_degrees=60) # Angle of the camera (0º would mean zenith).
 ```
 
 ```python
-object_height = ruler.object_length_in_cm(object_length_px=2320, # Length of a vertical of the object in pixels,
-                                                  distance_to_object_cm=118.0, # Distance between the object and the camera lens in cm
-                                                  angle_degrees=60) # Angle with which the image was taken (0 would mean zenith).
+object_height = ruler.object_length_in_cm(object_length_px=1969, # Height of the object to measure in pixels.
+                                          distance_to_object_cm=140.0, # Distance between the object and the camera lens.
+                                          angle_degrees=60) # Angle of the camera (0º would mean zenith).
 ```
-
+Output:
 ```python
-# Print the real length in cm.
->>> Object height -> Calculated: 89.5742 cm [Real 90.0 cm]
+>>> distance_lens_to_object: Calculated: 139.6958 cm - Real Distance: ≈ 140 cm
+>>> object_height: Calculated: 90.1959 - Real Height: 90 cm
 ```
 
 ### Homographies
