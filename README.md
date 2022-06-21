@@ -73,16 +73,16 @@ Output:
 ```
 
 ### Homographies
-Homographies module includes functions for changing the perspective of an image, while maintaining the real world coherence.
+**Homographies** are included in the [`pic2world.homographies.homography_utils`](./modules/homographies/homography_utils.py') module. This functions need, as _input_, the **angle** of the camera, and the **bbox** surrounding the object to isolate. It includes an **interactive** option to let the user define the _bbox_ when it is not known.
 
-##### From original image to zenith view. Setting input interactively
+Let's see an example with the same image used in the [Camera Utils](#camera-utils):
 
 ```python
 from pic2world.homographies.homography_utils import correct_perspective
-correct_polygon_perspective(img,
+correct_polygon_perspective(img=None,
                             origin_polygon=None, # We are not providing an input polygon because we want the user to define it.
                             interactive=True, # Ask the user to define the polygon.
-                            angle_degrees=60.0, # Angle with which the image was originaly taken.
+                            angle_degrees=60 # Angle with which the image was originaly taken.
                             output_shape=(600, 300), # Output shape we want
                             pad= 0.05) # Padding between the limits of the rectangle and the border of the output image.
 ```
